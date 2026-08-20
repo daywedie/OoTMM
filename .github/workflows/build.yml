@@ -33,4 +33,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ootmm-webapp
-          path: build     # ou a pasta de saída (pode ser "build", "out", etc.)
+          path: build/     # ou a pasta de saída (pode ser "build", "out", etc.)
