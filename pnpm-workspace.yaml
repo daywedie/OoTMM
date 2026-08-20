@@ -1,0 +1,8 @@
+packages:
+  - 'packages/*'
+  - 'tools/*'
+
+onlyBuiltDependencies:
+  - esbuild
+  - microtime
+  - nx
