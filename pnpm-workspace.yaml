@@ -1,6 +1,5 @@
 packages:
   - 'packages/*'
-  - 'packages/tools/*'
 
 onlyBuiltDependencies:
   - esbuild
