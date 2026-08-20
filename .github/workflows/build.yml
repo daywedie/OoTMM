@@ -27,10 +27,19 @@ jobs:
         run: pnpm install
 
       - name: Build
-        run: pnpm start:config   # ou o comando que você encontrou
+        run: pnpm build
+
+      # Etapa temporária para descobrir onde estão os arquivos gerados
+      - name: Listar arquivos gerados
+        run: |
+          echo "Conteúdo da pasta dist (se existir):"
+          ls -la dist 2>/dev/null || echo "dist não existe"
+          echo ""
+          echo "Procurando por index.html dentro de dist:"
+          find dist -maxdepth 4 -name index.html 2>/dev/null || echo "Nenhum index.html encontrado"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ootmm-webapp
-          path: build/     # ou a pasta de saída (pode ser "build", "out", etc.)
+          path: dist/   # Vamos testar com dist/ primeiro
