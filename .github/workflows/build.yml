@@ -33,7 +33,7 @@ jobs:
           EOF
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --force
 
       - name: Build
         run: pnpm build
