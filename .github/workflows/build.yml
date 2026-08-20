@@ -23,6 +23,19 @@ jobs:
         with:
           version: latest
 
+      - name: Create pnpm-workspace.yaml
+        run: |
+          cat > pnpm-workspace.yaml << 'EOF'
+          onlyBuiltDependencies:
+            - esbuild
+            - microtime
+            - nx
+          EOF
+          
+      - name: Install dependencies
+        run: pnpm install
+
+  
       - name: Install dependencies
         run: pnpm install
 
