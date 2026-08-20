@@ -31,11 +31,7 @@ jobs:
             - microtime
             - nx
           EOF
-          
-      - name: Install dependencies
-        run: pnpm install
 
-  
       - name: Install dependencies
         run: pnpm install
 
