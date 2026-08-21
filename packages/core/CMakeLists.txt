@@ -17,8 +17,8 @@ endforeach()
 project(OoTMM C ASM)
 
 set(FLAGS "-EB -static -fomit-frame-pointer -ffreestanding -nostdlib -fno-PIC -mabi=32 -mno-shared -mno-abicalls -march=vr4300 -mtune=vr4300 -mfix4300 -mfix-r4000 -G 0 -Os -Wall -Werror=implicit-function-declaration -Werror=implicit-int -Wimplicit-fallthrough -Wl,--build-id=none")
-set(CMAKE_C_FLAGS "${FLAGS} -D_LANGUAGE_C=1")
-set(CMAKE_ASM_FLAGS "${FLAGS}")
+set(CMAKE_C_FLAGS "${FLAGS} -nostdinc -D_LANGUAGE_C=1")
+set(CMAKE_ASM_FLAGS "${FLAGS} -nostdinc")
 
 # Override default envs
 set(CMAKE_C_FLAGS_DEBUG "-DDEBUG=1 -g -g3")
