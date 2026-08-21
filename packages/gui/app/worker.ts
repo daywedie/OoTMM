@@ -1,6 +1,8 @@
 import JSZip from 'jszip';
 import { Settings, itemPool, Items, OptionsInput, GeneratorOutput, generate } from '@ootmm/core';
 import dataVersionZipFile from '@ootmm/core/dist/data.zip?url';
+import { Buffer } from 'buffer';
+(globalThis as any).Buffer = Buffer;
 
 async function makeDataPromise(path: string) {
   const reply = await fetch(path);
