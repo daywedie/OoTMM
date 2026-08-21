@@ -33,6 +33,7 @@ set(CMAKE_ASM_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL}")
 
 include_directories(SYSTEM "${CMAKE_SOURCE_DIR}/third_party/ultralib/include" "${CMAKE_SOURCE_DIR}/third_party/ultralib/include/gcc")
 include_directories("${CMAKE_SOURCE_DIR}/include" "${CMAKE_SOURCE_DIR}/build/include")
+include_directories(SYSTEM "/opt/libdragon/mips64-elf/include")
 
 add_compile_definitions("F3DEX_GBI_2=1")
 
