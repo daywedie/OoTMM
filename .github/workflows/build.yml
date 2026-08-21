@@ -33,10 +33,19 @@ jobs:
           sudo dpkg -i gcc-toolchain-mips64-amd64.deb || sudo apt-get install -f -y
           rm gcc-toolchain-mips64-amd64.deb
 
-      - name: Localizar compilador MIPS
+      - name: Investigar instalação do toolchain
         run: |
-          dpkg -L gcc-toolchain-mips64 | grep -E 'bin/.*gcc$' || true
-          find / -name "mips64-elf-gcc" 2>/dev/null || find / -name "mips64-unknown-elf-gcc" 2>/dev/null || echo "compilador não encontrado"
+          echo "Arquivos instalados pelo pacote gcc-toolchain-mips64:"
+          dpkg -L gcc-toolchain-mips64 || true
+          echo ""
+          echo "Procurando por binários com 'mips' no nome:"
+          find / -type f -name "*mips*" 2>/dev/null | head -50
+          echo ""
+          echo "Procurando por gcc em diretórios comuns:"
+          ls -la /opt /usr/local /usr/bin 2>/dev/null | grep -i mips || true
+          echo ""
+          echo "Procurando por qualquer gcc:"
+          find / -type f -name "*-gcc*" 2>/dev/null | head -50
 
       # Após saber o caminho, adicione ao PATH
       - name: Add MIPS toolchain to PATH
