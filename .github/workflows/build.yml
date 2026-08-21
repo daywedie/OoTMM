@@ -32,25 +32,31 @@ jobs:
           sudo apt-get update
           sudo dpkg -i gcc-toolchain-mips64-amd64.deb || sudo apt-get install -f -y
           rm gcc-toolchain-mips64-amd64.deb
-          # Verifica se o compilador está no PATH
-          mips64-elf-gcc --version
+
+      - name: Localizar compilador MIPS
+        run: |
+          dpkg -L gcc-toolchain-mips64 | grep -E 'bin/.*gcc$' || true
+          find / -name "mips64-elf-gcc" 2>/dev/null || find / -name "mips64-unknown-elf-gcc" 2>/dev/null || echo "compilador não encontrado"
+
+      # Após saber o caminho, adicione ao PATH
+      - name: Add MIPS toolchain to PATH
+        run: |
+          echo "/opt/mips64-elf/bin" >> $GITHUB_PATH   # ajuste conforme localização
 
       - name: Build
         env:
-          CC: mips64-elf-gcc
+          CC: mips64-elf-gcc   # ou mips64-unknown-elf-gcc
         run: pnpm build
 
-      # Etapa para descobrir onde estão os arquivos gerados
       - name: Listar arquivos gerados
         run: |
           echo "Conteúdo da pasta dist (se existir):"
           ls -la dist 2>/dev/null || echo "dist não existe"
           echo ""
-          echo "Procurando por index.html dentro de dist:"
           find dist -maxdepth 4 -name index.html 2>/dev/null || echo "Nenhum index.html encontrado"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ootmm-webapp
-          path: dist/   # ajuste conforme o resultado da etapa "Listar arquivos gerados"
+          path: dist/
