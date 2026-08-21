@@ -22,7 +22,7 @@ jobs:
           sudo apt-get update
           sudo dpkg -i gcc-toolchain-mips64-amd64.deb || sudo apt-get install -f -y
           rm gcc-toolchain-mips64-amd64.deb
-          echo "/opt/libdragon/bin" >> $GITHUB_PATHgit add
+          echo "/opt/libdragon/bin" >> "$GITHUB_PATH"
 
       - name: Checkout code
         uses: actions/checkout@v4
