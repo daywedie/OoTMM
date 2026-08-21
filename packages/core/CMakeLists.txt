@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -nostdinc")
+
 set(ARCH_CANDIDATES "mips64-ultra-elf" "mips-linux-gnu" "mips64-linux-gnu" "mipsel-linux-gnu" "mips64el-linux-gnu")
 
 foreach(arch ${ARCH_CANDIDATES})
