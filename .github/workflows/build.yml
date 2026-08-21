@@ -32,29 +32,12 @@ jobs:
           sudo apt-get update
           sudo dpkg -i gcc-toolchain-mips64-amd64.deb || sudo apt-get install -f -y
           rm gcc-toolchain-mips64-amd64.deb
-
-      - name: Investigar instalação do toolchain
-        run: |
-          echo "Arquivos instalados pelo pacote gcc-toolchain-mips64:"
-          dpkg -L gcc-toolchain-mips64 || true
-          echo ""
-          echo "Procurando por binários com 'mips' no nome:"
-          find / -type f -name "*mips*" 2>/dev/null | head -50
-          echo ""
-          echo "Procurando por gcc em diretórios comuns:"
-          ls -la /opt /usr/local /usr/bin 2>/dev/null | grep -i mips || true
-          echo ""
-          echo "Procurando por qualquer gcc:"
-          find / -type f -name "*-gcc*" 2>/dev/null | head -50
-
-      # Após saber o caminho, adicione ao PATH
-      - name: Add MIPS toolchain to PATH
-        run: |
-          echo "/opt/mips64-elf/bin" >> $GITHUB_PATH   # ajuste conforme localização
+          # Adiciona o diretório dos binários ao PATH (persiste nas próximas etapas)
+          echo "/opt/libdragon/bin" >> $GITHUB_PATH
 
       - name: Build
         env:
-          CC: mips64-elf-gcc   # ou mips64-unknown-elf-gcc
+          CC: mips64-elf-gcc
         run: pnpm build
 
       - name: Listar arquivos gerados
@@ -62,10 +45,11 @@ jobs:
           echo "Conteúdo da pasta dist (se existir):"
           ls -la dist 2>/dev/null || echo "dist não existe"
           echo ""
+          echo "Procurando por index.html dentro de dist:"
           find dist -maxdepth 4 -name index.html 2>/dev/null || echo "Nenhum index.html encontrado"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ootmm-webapp
-          path: dist/
+          path: dist/   # Ajuste se o log mostrar outro caminho
