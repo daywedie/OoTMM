@@ -35,10 +35,18 @@ jobs:
           # Adiciona o diretório dos binários ao PATH (persiste nas próximas etapas)
           echo "/opt/libdragon/bin" >> $GITHUB_PATH
 
-      - name: Build
+      - name: Build tools and data
+        run: |
+          pnpm nx run @ootmm/tools:build
+          pnpm nx run @ootmm/data:build
+
+      - name: Build core (MIPS)
         env:
           CC: mips64-elf-gcc
-        run: pnpm build
+        run: pnpm nx run @ootmm/core:build
+
+      - name: Build GUI
+        run: pnpm nx run @ootmm/gui:build
 
       - name: Listar arquivos gerados
         run: |
