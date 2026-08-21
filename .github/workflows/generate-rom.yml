@@ -1,0 +1,69 @@
+name: Generate OoTMM ROM
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '9.15.0'
+
+      - name: Install MIPS toolchain
+        run: |
+          wget https://github.com/DragonMinded/libdragon/releases/download/toolchain-continuous-prerelease/gcc-toolchain-mips64-amd64.deb
+          sudo apt-get update
+          sudo dpkg -i gcc-toolchain-mips64-amd64.deb || sudo apt-get install -f -y
+          rm gcc-toolchain-mips64-amd64.deb
+          echo "/opt/libdragon/bin" >> "$GITHUB_PATH"
+
+      - name: Create pnpm-workspace.yaml
+        run: |
+          cat > pnpm-workspace.yaml << 'EOF'
+          packages:
+            - 'packages/*'
+          onlyBuiltDependencies:
+            - esbuild
+            - microtime
+            - nx
+          EOF
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build tools and data
+        run: |
+          pnpm nx run @ootmm/tools:build
+          pnpm nx run @ootmm/data:build
+
+      - name: Build core (MIPS)
+        env:
+          CC: /opt/libdragon/bin/mips64-elf-gcc
+        run: pnpm nx run @ootmm/core:build --skip-nx-cache
+
+      - name: Generate ROM
+        env:
+          CC: /opt/libdragon/bin/mips64-elf-gcc
+        run: pnpm start:core
+
+      - name: Upload ROM
+        uses: actions/upload-artifact@v4
+        with:
+          name: ootmm-rom
+          path: |
+            packages/core/build/bin/*.z64
+            packages/core/build/*.z64
+            out/*.z64
