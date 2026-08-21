@@ -128,6 +128,10 @@ jobs:
           #endif /* _STDLIB_H_ */
           EOF
 
+      - name: Clean ultralib directory
+        run: |
+          rm -rf packages/core/third_party/ultralib
+
       - name: Build core (MIPS)
         env:
           CC: /opt/libdragon/bin/mips64-elf-gcc

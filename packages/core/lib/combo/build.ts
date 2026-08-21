@@ -19,6 +19,16 @@ const cloneDependencies = async () => {
       fs.promises.writeFile(stampFile, '').then(_ => resolve(null));
     });
   });
+
+
+// Criar stubs
+  const includeDir = path.resolve(thirdPartyDir, 'ultralib/include');
+  await fs.promises.mkdir(includeDir, { recursive: true });
+  await fs.promises.writeFile(path.resolve(includeDir, 'string.h'), `... conteúdo do string.h ...`);
+  await fs.promises.writeFile(path.resolve(includeDir, 'strings.h'), `...`);
+  await fs.promises.writeFile(path.resolve(includeDir, 'stdlib.h'), `...`);
+
+
 };
 
 async function runCommand(cmd: string, args: string[]) {
