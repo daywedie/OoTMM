@@ -23,6 +23,17 @@ const cloneDependencies = async () => {
       const includeDir = path.resolve(thirdPartyDir, 'ultralib/include');
       await fs.promises.mkdir(includeDir, { recursive: true });
 
+      await fs.promises.writeFile(path.resolve(includeDir, 'stddef.h'), `#ifndef _STDDEF_H_
+#define _STDDEF_H_
+
+typedef unsigned long size_t;
+typedef long ptrdiff_t;
+#define NULL ((void*)0)
+#define offsetof(type, member) __builtin_offsetof(type, member)
+
+#endif /* _STDDEF_H_ */
+`);
+
       await fs.promises.writeFile(path.resolve(includeDir, 'string.h'), `#ifndef _STRING_H_
 #define _STRING_H_
 
