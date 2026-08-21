@@ -41,6 +41,16 @@ jobs:
             - nx
           EOF
 
+      - name: Verify pnpm
+        run: |
+          pnpm --version
+          which pnpm
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '9.15.0'
+          
       - name: Install dependencies
         run: pnpm install
 
