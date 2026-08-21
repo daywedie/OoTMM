@@ -5,7 +5,12 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills';
 export default defineConfig({
   plugins: [
     react(),
-    nodePolyfills(),
+    nodePolyfills({
+  globals: {
+    Buffer: true,
+    process: true,
+  },
+})
   ],
   resolve: {
     alias: {
