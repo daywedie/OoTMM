@@ -1,18 +1,19 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { nodePolyfills } from 'vite-plugin-node-polyfills'; // import nomeado
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 export default defineConfig({
   plugins: [
     react(),
-    nodePolyfills(),  // agora funciona
+    nodePolyfills(),
   ],
   resolve: {
     alias: {
       'vite-plugin-node-polyfills/shims/buffer': 'buffer',
-      // Se necessário, adicione outros shims, ex:
-      // 'vite-plugin-node-polyfills/shims/process': 'process/browser',
+      // outros aliases se necessário
     },
   },
-  // ... outras opções que já existirem (build, server, etc.)
+  worker: {
+    format: 'es',   // <-- adicione esta linha
+  },
 });
