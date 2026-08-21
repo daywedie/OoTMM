@@ -8,8 +8,26 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 120   # tempo maior para compilar o toolchain
 
     steps:
+      - name: Instalar dependências do sistema
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential wget texinfo bison flex python3 git curl
+
+      - name: Compilar toolchain MIPS (decompals/n64-tools)
+        run: |
+          # Clone o repositório que contém o build-toolchain.sh
+          git clone https://github.com/n64-tools/gcc-toolchain-mips64.git /tmp/n64-tools
+          cd /tmp/n64-tools
+          # Lista os arquivos para confirmar o nome do script
+          ls -la
+          # Execute o script de build (ajuste se o nome for diferente)
+          ./build-toolchain.sh --prefix=/opt/n64-tools
+          # Adiciona o diretório dos binários ao PATH
+          echo "/opt/n64-tools/bin" >> $GITHUB_PATH
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -26,20 +44,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Install MIPS cross compiler (fallback)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-mips-linux-gnu
-          echo "CC=/usr/bin/mips-linux-gnu-gcc" >> $GITHUB_ENV
-
       - name: Build tools and data
         run: |
           pnpm nx run @ootmm/tools:build
           pnpm nx run @ootmm/data:build
 
       - name: Build core (MIPS)
-        env:
-          CC: mips-linux-gnu-gcc
         run: pnpm nx run @ootmm/core:build
 
       - name: Build GUI
@@ -57,4 +67,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ootmm-webapp
-          path: dist/   # Ajuste se o log mostrar outro caminho
+          path: dist/   # Ajuste se necessário
