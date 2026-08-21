@@ -73,11 +73,23 @@ jobs:
           CC: /opt/libdragon/bin/mips64-elf-gcc
         run: pnpm start:core
 
+      - name: Locate ROM
+        run: |
+          echo "Procurando por .z64 em todo o repositório:"
+          find . -name "*.z64" -type f || true
+          echo ""
+          echo "Conteúdo de packages/core/build:"
+          ls -la packages/core/build || true
+          echo ""
+          echo "Conteúdo de packages/core/build/bin:"
+          ls -la packages/core/build/bin || true
+          echo ""
+          echo "Conteúdo de packages/core/build/tree/Release:"
+          ls -la packages/core/build/tree/Release || true
+
       - name: Upload ROM
         uses: actions/upload-artifact@v4
         with:
           name: ootmm-rom
           path: |
-            packages/core/build/bin/*.z64
-            packages/core/build/*.z64
-            out/*.z64
+            **/*
