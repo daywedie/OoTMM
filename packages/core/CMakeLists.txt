@@ -98,10 +98,10 @@ function(build game)
       "${game_patch}"
       "${game_cosmetic_name}"
       "${game_cosmetic_addr}"
-    COMMAND "${ARCH}-objcopy" --only-section=.text -O binary "$<TARGET_FILE:${game}>" ${game_payload}
-    COMMAND "${ARCH}-objcopy" --only-section=.patch -O binary "$<TARGET_FILE:${game}>" ${game_patch}
-    COMMAND "${ARCH}-objcopy" --only-section=.cosmetic_name -O binary "$<TARGET_FILE:${game}>" ${game_cosmetic_name}
-    COMMAND "${ARCH}-objcopy" --only-section=.cosmetic_addr -O binary "$<TARGET_FILE:${game}>" ${game_cosmetic_addr}
+    COMMAND "mips64-elf-objcopy" --only-section=.text -O binary "$<TARGET_FILE:${game}>" ${game_payload}
+    COMMAND "mips64-elf-objcopy" --only-section=.patch -O binary "$<TARGET_FILE:${game}>" ${game_patch}
+    COMMAND "mips64-elf-objcopy" --only-section=.cosmetic_name -O binary "$<TARGET_FILE:${game}>" ${game_cosmetic_name}
+    COMMAND "mips64-elf-objcopy" --only-section=.cosmetic_addr -O binary "$<TARGET_FILE:${game}>" ${game_cosmetic_addr}
     DEPENDS ${game}
     COMMENT "Extracting sections for ${game}"
     VERBATIM
