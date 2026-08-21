@@ -32,23 +32,15 @@ jobs:
           sudo apt-get update
           sudo dpkg -i gcc-toolchain-mips64-amd64.deb || sudo apt-get install -f -y
           rm gcc-toolchain-mips64-amd64.deb
-          
-      - name: Install MIPS toolchain (n64)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget unzip
-
-          # Baixar e instalar toolchain MIPS (n64-ultra)
-          wget https://github.com/n64-tools/n64-tools.github.io/releases/download/linux/n64-tools-linux.zip -O n64-tools.zip
-          unzip n64-tools.zip -d /opt/n64-tools
-          echo "/opt/n64-tools/bin" >> $GITHUB_PATH
+          # Verifica se o compilador está no PATH
+          mips64-elf-gcc --version
 
       - name: Build
         env:
           CC: mips64-elf-gcc
         run: pnpm build
 
-      # Etapa temporária para descobrir onde estão os arquivos gerados
+      # Etapa para descobrir onde estão os arquivos gerados
       - name: Listar arquivos gerados
         run: |
           echo "Conteúdo da pasta dist (se existir):"
@@ -61,4 +53,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ootmm-webapp
-          path: dist/     # ou a pasta de saída (pode ser "build", "out", etc.)
+          path: dist/   # ajuste conforme o resultado da etapa "Listar arquivos gerados"
