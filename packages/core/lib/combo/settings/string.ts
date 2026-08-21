@@ -3,6 +3,25 @@ import { deflate, inflate } from 'pako';
 import { DEFAULT_SETTINGS, SETTINGS, Settings, makeSettings } from '../settings';
 import { PartialDeep } from 'type-fest';
 
+/* Helpers para substituir Buffer */
+function bytesToBase64(bytes: Uint8Array): string {
+  let binary = '';
+  const chunkSize = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+  }
+  return btoa(binary);
+}
+
+function base64ToBytes(base64: string): Uint8Array {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
+
 export function exportSettings(settings: Settings): string {
   const diff: any = {};
 
@@ -17,12 +36,12 @@ export function exportSettings(settings: Settings): string {
 
     let def: any = null;
     switch (data.type) {
-    case 'set':
-      def = { type: data.default };
-      break;
-    default:
-      def = data.default;
-      break;
+      case 'set':
+        def = { type: data.default };
+        break;
+      default:
+        def = data.default;
+        break;
     }
 
     if (!isEqual(v, def)) {
@@ -38,7 +57,7 @@ export function exportSettings(settings: Settings): string {
 
   const j = JSON.stringify(diff);
   const compressed = deflate(j);
-  const str = Buffer.from(compressed).toString('base64');
+  const str = bytesToBase64(compressed);
   return `v1.${str}`;
 }
 
@@ -60,14 +79,14 @@ export function importSettings(str: string): Settings {
 
 function importSettingsV1(str: string): any {
   const data = str.slice(3);
-  const buf = Buffer.from(data, 'base64');
+  const buf = base64ToBytes(data);
   const decompressed = inflate(buf, { to: 'string' });
   const partial = JSON.parse(decompressed);
   return partial;
 }
 
 function importSettingsV0(str: string): any {
-  const buf = Buffer.from(str, 'base64');
-  const partial = JSON.parse(buf.toString());
+  const binary = atob(str);
+  const partial = JSON.parse(binary);
   return partial;
 }
