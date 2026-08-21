@@ -92,4 +92,4 @@ jobs:
         with:
           name: ootmm-rom
           path: |
-            **/*
+            packages/core/out/*.z64
