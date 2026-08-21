@@ -53,9 +53,14 @@ export async function build(opts: Options) {
   await fs.promises.mkdir(installDir, { recursive: true });
 
   /* Build and install with CMake */
-  await runCommand('cmake', ['-B', buildDir, '-S', sourceDir, '-G', 'Ninja', `-DCMAKE_BUILD_TYPE=${opts.debug ? 'Debug' : 'Release'}`]);
-  await runCommand('cmake', ['--build', buildDir]);
-  await runCommand('cmake', ['--install', buildDir, '--prefix', installDir]);
+  await runCommand('cmake', [
+    '-B', buildDir,
+    '-S', sourceDir,
+    '-G', 'Ninja',
+    `-DCMAKE_BUILD_TYPE=${opts.debug ? 'Debug' : 'Release'}`,
+    '-DCMAKE_C_COMPILER=/opt/libdragon/bin/mips64-elf-gcc',
+    '-DCMAKE_ASM_COMPILER=/opt/libdragon/bin/mips64-elf-gcc'
+  ]);
 
   return binDir;
 }
