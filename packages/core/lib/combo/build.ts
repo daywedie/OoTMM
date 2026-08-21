@@ -10,25 +10,83 @@ const cloneDependencies = async () => {
   const stampFile = path.resolve(thirdPartyDir, '.stamp');
   if (await fileExists(stampFile))
     return;
+
   await fs.promises.mkdir(thirdPartyDir, { recursive: true });
+
   return new Promise((resolve, reject) => {
     const proc = childProcess.spawn('git', ['clone', '--depth', '50', 'https://github.com/decompals/ultralib', thirdPartyDir + '/ultralib'], { stdio: 'inherit' });
-    proc.on('close', (code) => {
+    proc.on('close', async (code) => {
       if (code !== 0)
         return reject(new Error(`git clone failed with code ${code}`));
-      fs.promises.writeFile(stampFile, '').then(_ => resolve(null));
+
+      /* Criar stubs de headers */
+      const includeDir = path.resolve(thirdPartyDir, 'ultralib/include');
+      await fs.promises.mkdir(includeDir, { recursive: true });
+
+      await fs.promises.writeFile(path.resolve(includeDir, 'string.h'), `#ifndef _STRING_H_
+#define _STRING_H_
+
+#include <stddef.h>
+
+void *memset(void *s, int c, size_t n);
+void *memcpy(void *dest, const void *src, size_t n);
+void *memmove(void *dest, const void *src, size_t n);
+int memcmp(const void *s1, const void *s2, size_t n);
+size_t strlen(const char *s);
+char *strcpy(char *dest, const char *src);
+char *strncpy(char *dest, const char *src, size_t n);
+char *strcat(char *dest, const char *src);
+char *strncat(char *dest, const char *src, size_t n);
+int strcmp(const char *s1, const char *s2);
+int strncmp(const char *s1, const char *s2, size_t n);
+char *strchr(const char *s, int c);
+char *strrchr(const char *s, int c);
+char *strstr(const char *haystack, const char *needle);
+size_t strspn(const char *s, const char *accept);
+size_t strcspn(const char *s, const char *reject);
+char *strpbrk(const char *s, const char *accept);
+char *strtok(char *str, const char *delim);
+
+#endif /* _STRING_H_ */
+`);
+
+      await fs.promises.writeFile(path.resolve(includeDir, 'strings.h'), `#ifndef _STRINGS_H_
+#define _STRINGS_H_
+
+#include <stddef.h>
+
+void bzero(void *s, size_t n);
+void bcopy(const void *src, void *dest, size_t n);
+int bcmp(const void *s1, const void *s2, size_t n);
+
+#endif /* _STRINGS_H_ */
+`);
+
+      await fs.promises.writeFile(path.resolve(includeDir, 'stdlib.h'), `#ifndef _STDLIB_H_
+#define _STDLIB_H_
+
+#include <stddef.h>
+
+void *malloc(size_t size);
+void free(void *ptr);
+void *calloc(size_t nmemb, size_t size);
+void *realloc(void *ptr, size_t size);
+void exit(int status);
+int atoi(const char *nptr);
+long strtol(const char *nptr, char **endptr, int base);
+unsigned long strtoul(const char *nptr, char **endptr, int base);
+int rand(void);
+void srand(unsigned int seed);
+int abs(int j);
+long labs(long j);
+
+#endif /* _STDLIB_H_ */
+`);
+
+      await fs.promises.writeFile(stampFile, '');
+      resolve(null);
     });
   });
-
-
-// Criar stubs
-  const includeDir = path.resolve(thirdPartyDir, 'ultralib/include');
-  await fs.promises.mkdir(includeDir, { recursive: true });
-  await fs.promises.writeFile(path.resolve(includeDir, 'string.h'), `... conteúdo do string.h ...`);
-  await fs.promises.writeFile(path.resolve(includeDir, 'strings.h'), `...`);
-  await fs.promises.writeFile(path.resolve(includeDir, 'stdlib.h'), `...`);
-
-
 };
 
 async function runCommand(cmd: string, args: string[]) {
@@ -75,5 +133,6 @@ export async function build(opts: Options) {
   ]);
   await runCommand('cmake', ['--build', buildDir]);
   await runCommand('cmake', ['--install', buildDir, '--prefix', installDir]);
+
   return binDir;
 }
