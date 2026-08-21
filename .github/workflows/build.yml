@@ -32,21 +32,7 @@ jobs:
           sudo apt-get update
           sudo dpkg -i gcc-toolchain-mips64-amd64.deb || sudo apt-get install -f -y
           rm gcc-toolchain-mips64-amd64.deb
-
-      - name: Install MIPS toolchain
-        run: |
-          # Criar diretório para o toolchain
-          mkdir -p /opt/mips
-          cd /opt/mips
-
-          # Baixar toolchain mips64-elf-gcc (versão 13.2.0, Linux x64)
-          wget https://github.com/xpack-dev-tools/mips-none-elf-gcc-xpack/releases/download/v13.2.0-1/xpack-mips-none-elf-gcc-13.2.0-1-linux-x64.tar.gz
-          tar -xzf xpack-mips-none-elf-gcc-13.2.0-1-linux-x64.tar.gz
-
-          # Adicionar binários ao PATH
-          echo "/opt/mips/xpack-mips-none-elf-gcc-13.2.0-1/bin" >> $GITHUB_PATH
-
-
+          
       - name: Install MIPS toolchain (n64)
         run: |
           sudo apt-get update
