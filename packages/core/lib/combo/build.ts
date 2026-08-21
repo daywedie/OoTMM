@@ -59,8 +59,11 @@ export async function build(opts: Options) {
     '-G', 'Ninja',
     `-DCMAKE_BUILD_TYPE=${opts.debug ? 'Debug' : 'Release'}`,
     '-DCMAKE_C_COMPILER=/opt/libdragon/bin/mips64-elf-gcc',
-    '-DCMAKE_ASM_COMPILER=/opt/libdragon/bin/mips64-elf-gcc'
+    '-DCMAKE_ASM_COMPILER=/opt/libdragon/bin/mips64-elf-gcc',
+    '-DCMAKE_C_FLAGS=-nostdinc',
+    '-DCMAKE_ASM_FLAGS=-nostdinc'
   ]);
-
+  await runCommand('cmake', ['--build', buildDir]);
+  await runCommand('cmake', ['--install', buildDir, '--prefix', installDir]);
   return binDir;
 }
