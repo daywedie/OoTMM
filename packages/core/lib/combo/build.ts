@@ -61,6 +61,8 @@ export async function build(opts: Options) {
     '-DCMAKE_C_COMPILER=/opt/libdragon/bin/mips64-elf-gcc',
     '-DCMAKE_ASM_COMPILER=/opt/libdragon/bin/mips64-elf-gcc'
   ]);
+  await runCommand('cmake', ['--build', buildDir]);
+  await runCommand('cmake', ['--install', buildDir, '--prefix', installDir]);
 
   return binDir;
 }
