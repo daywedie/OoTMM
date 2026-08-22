@@ -1,4 +1,4 @@
-name: Generate OoTMM ROM
+name: Generate OoTMM ROM (No Cosmetics)
 
 on:
   workflow_dispatch:
@@ -59,37 +59,48 @@ jobs:
           pnpm nx run @ootmm/tools:build
           pnpm nx run @ootmm/data:build
 
-      - name: Clean ultralib directory
-        run: |
-          rm -rf packages/core/third_party/ultralib
-
       - name: Build core (MIPS)
         env:
           CC: /opt/libdragon/bin/mips64-elf-gcc
         run: pnpm nx run @ootmm/core:build --skip-nx-cache
 
-      - name: Generate ROM
+      # (Opcional) Cria um settings.json para desativar cosméticos.
+      # Se o CLI aceitar --settings, use: pnpm start:core --settings settings.json
+      # Caso contrário, você pode editar o arquivo cli.ts para usar essas configurações.
+      - name: Create settings.json (disable cosmetics)
+        run: |
+          cat > packages/core/settings.json << 'EOF'
+          {
+            "cosmetics": {
+              "enabled": false,
+              "models": false,
+              "music": false,
+              "hud": false,
+              "textures": false
+            }
+          }
+          EOF
+
+      - name: Generate ROM (with settings if supported)
         env:
           CC: /opt/libdragon/bin/mips64-elf-gcc
-        run: pnpm start:core
-
-      - name: Locate ROM
         run: |
-          echo "Procurando por .z64 em todo o repositório:"
-          find . -name "*.z64" -type f || true
-          echo ""
-          echo "Conteúdo de packages/core/build:"
-          ls -la packages/core/build || true
-          echo ""
-          echo "Conteúdo de packages/core/build/bin:"
-          ls -la packages/core/build/bin || true
-          echo ""
-          echo "Conteúdo de packages/core/build/tree/Release:"
-          ls -la packages/core/build/tree/Release || true
+          # Tente com --settings; se falhar, execute sem argumentos.
+          pnpm start:core --settings settings.json || pnpm start:core
 
-      - name: Upload ROM
+      # Lista os arquivos gerados (útil para debug)
+      - name: Listar arquivos gerados
+        run: |
+          echo "Conteúdo de packages/core/out:"
+          find packages/core/out -maxdepth 2 -type f -print || true
+          echo ""
+          echo "Procurando por .z64 e .txt:"
+          find packages/core/out -type f \( -name "*.z64" -o -name "*.txt" \) -print || true
+
+      # Upload de todos os arquivos da pasta out (inclui ROM e spoiler)
+      - name: Upload ROM e Spoiler
         uses: actions/upload-artifact@v4
         with:
-          name: ootmm-rom
+          name: ootmm-output
           path: |
-            **/*
+            packages/core/out/**
